@@ -1,0 +1,71 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+
+// class menggunakan IInteractable
+public class letter : MonoBehaviour, IInteractable
+{
+    public GameObject letterUI; // UI petunjuk
+    bool toggle; // penanda sedang dibuka atau tidak
+    public PlayerMov player; // script movement player
+
+    public float readDuration = 60f; // durasi membaca petunjuk
+    private float timer; // timer berjalan
+
+    public TextMeshProUGUI timerText; // UI waktu
+
+    private void Update()
+    {
+        if (toggle) // jika petunjuk sedang dibuka
+        {
+            timer -= Time.deltaTime; // waktu dihitung mundur
+
+            // update UI waktu
+            timerText.text = "Sisa waktu: " + timer.ToString("F1") + " dtk";
+
+            if (timer <= 0) // jika waktu habis, petunjuk otomatis menutup
+            {
+                CloseLetter();
+            }
+        }
+    }
+
+    public void Interact() // dipanggil ketika player klik E
+    { 
+        openCloseLetter(); // penanda buka atau tutup
+    }
+
+    public void openCloseLetter()
+    {
+        toggle = !toggle; // balik kondisi
+
+        if (toggle)
+        {
+            OpenLetter(); // jika on = buka
+        }
+        else
+        {
+            CloseLetter(); // jika off = tutup
+        }
+    }
+
+    void OpenLetter() // jika membuka petunjuk
+    {
+        letterUI.SetActive(true); // tampilkan UI petunjuk
+        player.enabled = false; // movement player tidak aktif
+
+        timer = readDuration; // reset waktu
+    }
+
+    void CloseLetter() // jika tertutup
+    {
+        letterUI.SetActive(false); // sembunyikan UI petunjuk
+        player.enabled = true; // movement playr aktif kembali
+
+        toggle = false; // petunjuk menjadi tertutup
+
+        timerText.text = ""; // hapus waktu saat ditutup
+    }
+}

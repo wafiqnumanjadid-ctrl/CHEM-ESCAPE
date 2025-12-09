@@ -1,0 +1,5 @@
+// semua class yang memakai interface ini harus punya fungsi Interect()
+public interface IInteractable
+{
+    void Interact();
+}

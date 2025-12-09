@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class letter : MonoBehaviour
+{
+    public GameObject letterUI;
+    bool toggle;
+    public PlayerMovement player;
+
+    public float readDuration = 60f;
+    private float timer;
+
+    public TextMeshProUGUI timerText; // UI waktu
+
+    private void Update()
+    {
+        if (toggle)
+        {
+            timer -= Time.deltaTime;
+
+            // update UI tulisan timer
+            timerText.text = "Sisa waktu: " + timer.ToString("F1") + " dtk";
+
+            if (timer <= 0)
+            {
+                CloseLetter();
+            }
+        }
+    }
+
+    public void openCloseLetter()
+    {
+        toggle = !toggle;
+
+        if (toggle)
+        {
+            OpenLetter();
+        }
+        else
+        {
+            CloseLetter();
+        }
+    }
+
+    void OpenLetter()
+    {
+        letterUI.SetActive(true);
+        player.enabled = false;
+
+        timer = readDuration;
+    }
+
+    void CloseLetter()
+    {
+        letterUI.SetActive(false);
+        player.enabled = true;
+
+        toggle = false;
+
+        timerText.text = ""; // hapus waktu saat ditutup
+    }
+}

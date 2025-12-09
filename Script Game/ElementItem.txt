@@ -1,0 +1,42 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class ElementItem : MonoBehaviour,
+    IBeginDragHandler, IDragHandler, IEndDragHandler
+{
+    public string elementCode;
+
+    private Transform originalParent;
+    private Canvas canvas;
+    private CanvasGroup canvasGroup;
+
+    void Awake()
+    {
+        canvas = GetComponentInParent<Canvas>();
+
+        // wajib agar raycast bisa dimatikan
+        canvasGroup = gameObject.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        originalParent = transform.parent;
+        transform.SetParent(canvas.transform);
+
+        // PENTING: biar slot bisa nerima drop
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        transform.position = eventData.position;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        canvasGroup.blocksRaycasts = true;
+    }
+}

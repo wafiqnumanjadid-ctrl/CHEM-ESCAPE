@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMov : MonoBehaviour
+{
+    public Camera fpsCamera; // kamera FPS yang akan digerakkan oleh rotasi mouse
+    public float walkSpeed = 6f; // kecepatan berjalan
+    public float gravity = 10f; // gaya gravitasi ke bawah
+    public float lookSpeed = 2f; // sensitivitas pergerakan mouse
+    public float lookLimit = 45f; // batas maksimum rotasi vertikal (atas-bawah)
+
+    private Vector3 moveDirection = Vector3.zero; // arah dan kecepatan pergerakan
+    private float rotationX = 0; // rotasi vertical (kamera)
+    private CharacterController characterController; // referensi ke CharacterController
+
+    private bool canMove = true; // flag untuk mengizinkan gerakan
+
+    void Start()
+    {
+        characterController = GetComponent<CharacterController>(); // ambil CharacterController dari objek
+
+        Cursor.lockState = CursorLockMode.Locked; // kunci kursor di tengah layar
+        Cursor.visible = false; // sembunyikan kursor
+    }
+
+    void Update()
+    {
+        // arah depan & kanan relatif terhadap rotasi player
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
+
+        float horizontalInput = Input.GetAxis("Vertical"); // input W/S (maju/mundur)
+        float verticalInput = Input.GetAxis("Horizontal"); // input A/D (kiri/kanan)
+
+        // hitung kecepatan ke depan dan samping
+        float curSpeedX = walkSpeed * Input.GetAxis("Vertical");
+        float curSpeedY = walkSpeed * Input.GetAxis("Horizontal");
+
+        float movementDirectionY = moveDirection.y; // simpan kecepatan vertikal sebelumnya
+
+        // gabungkan arah pergerakan horizontal berdasarkan input
+        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
+
+        // jika tidak di tanah, tambahkan gravitasi ke bawah
+        if (!characterController.isGrounded)
+        {
+            moveDirection.y -= gravity * Time.deltaTime;
+        }
+
+        characterController.Move(moveDirection * Time.deltaTime); // gerakkan karakter
+
+        // kontrol rotasi kamera & player
+        if (canMove)
+        {
+            rotationX -= Input.GetAxis("Mouse Y") * lookSpeed; // rotasi atas-bawah
+            rotationX = Mathf.Clamp(rotationX, -lookLimit, lookLimit); // batasi rotasi vertikal
+
+            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0); // rotasi body
+            fpsCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0); // rotasi kamera
+        }
+    }
+}

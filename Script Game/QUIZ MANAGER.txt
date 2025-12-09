@@ -1,0 +1,42 @@
+using TMPro;   // penting kalau pakai TMP
+using UnityEngine;
+
+public class QuizManager : MonoBehaviour
+{
+    public SlotInput[] slots;
+    public TextMeshProUGUI resultText;   // UI untuk tampilkan hasil
+
+    public void CheckAnswer()
+    {
+        // cek apakah semua slot sudah terisi
+        foreach (SlotInput slot in slots)
+        {
+            if (!slot.IsFilled())
+            {
+                resultText.text = "Semua slot harus diisi!";
+                resultText.color = Color.yellow;
+                return;
+            }
+        }
+
+        // cek benar / salah
+        foreach (SlotInput slot in slots)
+        {
+            if (!slot.IsCorrect())
+            {
+                resultText.text = "Jawaban SALAH!";
+                resultText.color = Color.red;
+                return;
+            }
+        }
+
+        resultText.text = "SEMUA JAWABAN BENAR!";
+        resultText.color = Color.green;
+        OnQuizSuccess();
+    }
+
+    void OnQuizSuccess()
+    {
+        // lanjutkan game, buka pintu, dsb.
+    }
+}

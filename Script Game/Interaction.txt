@@ -1,0 +1,42 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static interface; // untuk mengakses ke IInteractable yang ada di script interface
+
+public class interaction : MonoBehaviour
+{
+    public float interactionDistance; // jarak max raycast untuk mendeteksi objek
+    public GameObject interactionText; // UI teks, disini kita memakai hurus  E
+    public LayerMask interactionLayers; // layer yang bisa diinteract
+
+    private void Update()
+    {
+        RaycastHit hit; // tempat menyimpan info objek yang kena raycast
+
+        bool hasHit = Physics.Raycast(transform.position, transform.forward, out hit, interactionDistance, interactionLayers);
+
+        if (!hasHit) // jika tidak mengenai objek apa pun
+        {
+            interactionText.SetActive(false); // sembunyikan UI interact
+            return;
+        }
+
+        // mengechek apakah objek yang kena raycast punya script IInteractable
+        IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+        
+        if (interactable != null) // jika ada objek yang bisa
+        {
+            interactionText.SetActive(true); // tampilkan UI
+
+            if (Input.GetKeyDown(KeyCode.E)) // ketika player klik E
+            {
+                interactable.Interact(); // tampilkan fungsi interact()
+            }
+        }
+
+        else
+        {
+            interactionText.SetActive(false); // jika tidak sembunyikan UI
+        }
+    }
+}

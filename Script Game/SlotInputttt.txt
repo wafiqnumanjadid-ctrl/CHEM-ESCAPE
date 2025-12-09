@@ -1,0 +1,33 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class SlotInput : MonoBehaviour, IDropHandler
+{
+    public string correctAnswer;
+    public string currentAnswer;
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        GameObject dragged = eventData.pointerDrag;
+        if (dragged == null) return;
+
+        ElementItem element = dragged.GetComponent<ElementItem>();
+        if (element == null) return;
+
+        currentAnswer = element.elementCode;
+
+        dragged.transform.SetParent(transform);
+        dragged.transform.localPosition = Vector3.zero;
+    }
+
+    public bool IsCorrect()
+    {
+        return currentAnswer == correctAnswer;
+    }
+
+    public bool IsFilled()
+    {
+        return !string.IsNullOrEmpty(currentAnswer);
+    }
+}
